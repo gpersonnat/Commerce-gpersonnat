@@ -1,0 +1,31 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+{% if user.is_authenticated %}
+    <h2>Active Listings</h2>
+    {% if error %}
+    <h2>Listing does not exist</h2>
+
+    {% endif %}
+
+    <ul>
+        {% for listing in listings %}
+            <li> 
+                <a href="{% url 'listing' listing.id %}"><h2>{{ listing.name }}</h2></a>
+                <p>Price: ${{ listing.price }}</p>
+                <p>{{ listing.description }}</p>
+                <p>Created {{ listing.created_at }}</p>
+                <img src="{{ listing.image.url }}" width="200" 
+                height="200"> 
+
+
+            </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+
+    {% endif %}
+
+
+{% endblock %}

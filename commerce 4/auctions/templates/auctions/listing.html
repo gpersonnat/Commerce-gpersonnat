@@ -1,0 +1,132 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    {{ listing.name }}
+{% endblock %}
+
+
+{% block body %}
+
+<h2>{{ listing.name }}</h2>
+<img src="{{ listing.image.url }}" width="200" height="200">
+<p>{{ listing.description }}</p>
+<h4>${{ listing.price }}</h4>
+
+
+{% if active %}
+
+<p>{{ length }} bids so far.</p>
+
+{% if highest_bidder.id == request.user.id %}
+
+<p>Your bid is the current bid.</p>
+
+{% endif %}
+
+{% if creator.id == request.user.id %}
+
+<form action="{% url 'close_bid' %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="id" value="{{ listing.id }}">
+    <input type=submit value="Close Auction">
+</form>
+
+{% else %}
+
+<form action="{% url 'bid' %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="id" value="{{ listing.id }}">
+    {{ form }}
+    <input type="submit" value="Place Bid">
+
+
+
+
+    {% if error %}
+    <p>{{ error }} </p>
+    {% else %}
+ 
+    {% endif %}
+
+</form>
+
+
+
+<!--Goes with user-->
+{% endif %}
+
+
+
+
+<form action="{% url 'watchlist' %}" method="post">
+    {% csrf_token %}
+  
+    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+
+    <input type="submit" value="Add to Watchlist" class="add_watchlist">
+</form>
+
+<style>
+    .add_watchlist{
+        position: relative;
+        left: 500px;
+        bottom: 300px;
+    }
+</style>
+
+{% else %}
+
+{% if highest_bidder.id == request.user.id %}
+
+<h2>Congratulations, you won the auction</h2>
+
+
+{% endif %}
+
+{% endif %}
+
+<h2>Details</h2>
+<ul>
+    <li>Listed by: {{ creator.username }}</li>
+</ul>
+
+{% if comment_form %}
+
+
+<form action="{% url 'comment' listing.id %}" method="post">
+
+    {% csrf_token %}
+
+    {{ comment_form }}
+<input type="submit">
+
+{% if error %}
+
+<p>{{ error }}</p>
+{% endif %}
+
+</form>
+
+
+{% else %}
+
+    <a href="{% url 'comment' listing.id %}"><button>Comment</button></a>
+{% endif %}
+
+<h4>Comments:</h4>
+
+<ul>
+    {% for comment in comments %}
+
+    <li><p>{{ comment.commenter.username }}: {{ comment.text }}</p></li>
+
+    {% empty %}
+        <p>No Comments</p>
+    {% endfor %}
+</ul>
+
+
+
+
+
+{% endblock %}
